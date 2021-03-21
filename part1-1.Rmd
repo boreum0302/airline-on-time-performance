@@ -1,0 +1,62 @@
+---
+title: '326.212 Final Project: Part 1-1'
+output: html_document
+---
+
+## 2018-11120 양은주
+
+```{r include=FALSE}
+library(DBI)
+library(RSQLite)
+library(tidyverse)
+```
+
+```{r echo=FALSE}
+## Create an empty SQLite database ----
+con = dbConnect(RSQLite::SQLite(), "employee.sqlite")
+str(con)
+
+# Create two data frames----
+employees = tibble(name = c("Alice", "Bob", "Carol", "Dave", "Eve", "Frank"),
+                   email = c("alice@company.com", "bob@company.com",
+                             "carol@company.com", "dave@company.com",
+                             "eve@company.com", "frank@comany.com"),
+                   salary = c(52000, 40000, 30000, 33000, 44000, 37000),
+                   dept = c("Accounting", "Accounting", "Sales",
+                            "Accounting", "Sales", "Sales"))
+phone = tibble(name = c("Bob", "Carol", "Eve", "Frank"),
+               phone = c("010-555-1111", "010-555-2222",
+                         "010-555-3333", "010-555-4444"))
+
+# Write the data frames to the database ----
+dbWriteTable(con, "employees", employees, overwrite = TRUE)
+dbWriteTable(con, "phone", phone, overwrite = TRUE)
+
+# You can list the database tables ----
+dbListTables(con)
+
+# After creating a database, you may disconnect the connection ----
+dbDisconnect(con)
+
+# Now use dplyr to query the database. Of course, you need to reconnect to the database ----
+recon = dbConnect(RSQLite::SQLite(), "employee.sqlite")
+emp = dplyr::tbl(recon, "employees")
+str(emp)
+ph = dplyr::tbl(recon, "phone")
+str(ph)
+
+# You can treat emp and ph as if they are just tibbles ----
+addr = emp %>%
+  select(name, salary) %>%
+  arrange(salary)
+addr
+left_join(emp, ph)
+
+# You can do the similar task by directly feeding SQL, the language for database, through DBI ----
+res = dbSendQuery(recon, "SELECT * FROM employees")
+dbFetch(res)
+dbClearResult(res)
+
+# Don’t forget to disconnect after you finish your job ----
+dbDisconnect(recon)
+```
