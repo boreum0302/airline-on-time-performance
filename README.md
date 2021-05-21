@@ -1,4 +1,4 @@
-To see my work, please click [here](https://boreum0302.github.io/project/airline-on-time-performance/).
+Please click [here](https://boreum0302.github.io/project/airline-on-time-performance/) to see my work.
 
 # [2009 Data Expo](http://stat-computing.org/dataexpo/2009/)
 
